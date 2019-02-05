@@ -22,7 +22,15 @@ class UglifyCssFilter extends BaseFilter {
      * @inheritdoc
      */
     public function process($files, $output) {
-        $tmpFile = tempnam("/tmp", "yac");
+        if (Console::isRunningOnWindows()){
+            // On windows OS there is no /tmp folder, but there is a %TMP%, what should be C:\Windows\Temp
+            // and this is the default on windows
+            $tmpFile = tempnam(null, "yac");
+        }else {
+            // On linux or mac OS we should use /tmp folder
+            $tmpFile = tempnam("/tmp", "yac");
+        }
+
         $content = CssHelper::combineFiles($files, $output, true);
         file_put_contents($tmpFile, $content);
 
